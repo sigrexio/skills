@@ -1,8 +1,7 @@
 # Sigrex Agent Skills
 
 Reusable [Agent Skills](https://agentskills.io/) for building, operating, and
-integrating with [Sigrex](https://docs.sigrex.io/), a trading automation
-platform.
+integrating with [Sigrex](https://docs.sigrex.io/).
 
 ## Skills
 
