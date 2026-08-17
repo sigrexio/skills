@@ -3,6 +3,9 @@
 [Agent Skills](https://agentskills.io/) for building, operating, and
 integrating with [Sigrex](https://docs.sigrex.io/).
 
+[![skills.sh](https://skills.sh/b/sigrexio/skills)](https://skills.sh/sigrexio/skills)
+[![skills.sh](https://skills.sh/b/sigrexio/skills)](https://skills.sh/sigrexio/skills)
+
 ## Install
 ```
 npx skills add sigrexio/skills
