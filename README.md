@@ -42,8 +42,3 @@ documentation at
 [`docs.sigrex.io`](https://docs.sigrex.io/llms.txt). Trading actions are treated
 as live and potentially irreversible: each skill requires confirmation before
 activation, mutation, sharing, deletion, or execution against real capital.
-
-## License
-
-No license has been selected for this repository yet. Add one before
-redistributing the collection.
