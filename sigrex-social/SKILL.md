@@ -45,9 +45,11 @@ Strategies are not shared through this mechanism. Code Strategies, LLM
 Sessions and Reactions have a separate **public** flag:
 `PUT /strategy/code/{id}/public` with `{"isPublic": true}`, and the same route
 under `strategy/llm-session`, `strategy/reaction/code` and
-`strategy/reaction/llm`. The docs do not explain
-what public visibility exposes, so treat it as publishing the strategy (code
-or prompt) and ask before enabling it.
+`strategy/reaction/llm`. Public items can be listed and read by other users
+(the MCP server exposes `list_all_public_*` and `get_public_*` tools for code
+strategies, LLM sessions and both reaction types), so making something
+public publishes its code or prompt. Ask before enabling it, and check that
+no secrets, hook URLs or keys are in the code or prompt.
 
 ## Share API (prefix `/api/v2`)
 

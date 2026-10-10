@@ -222,8 +222,8 @@ Details: `sigrex-dex-bots`.
 
 ## Flow 7: Prediction Markets
 
-Creating prediction bots and keys is **temporarily disabled**; confirm on the
-live docs first. When available:
+Prediction bots (Polymarket, Outcome.xyz) are driven only through their Bot
+Webhook:
 
 - **Direct:** source posts
   `{"key":"...","slug":"<market-slug>","outcome":"Yes","side":"BUY","size":5}`
@@ -256,7 +256,7 @@ Details: `sigrex-prediction-bots`.
 
 ## Flow 9: Execution Feedback Loop (callbacks)
 
-Signals sent with `callback` (from scripts/alerts; strategy actions have no
+Signals sent with `callback` (from scripts or alerts; strategy actions have no
 callback option) get the fill result POSTed to a URL.
 
 - To your own backend: store `executor.bot.id`, `result.status`, fills.

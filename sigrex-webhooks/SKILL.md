@@ -137,7 +137,9 @@ Other senders:
 - **Email:** send the JSON payload to `<hash>@sigrex.io`. Sigrex detects
   valid signal payloads and triggers the bots; other emails (e.g.
   verification mails) are forwarded to the account's registered address.
-- **MCP:** `send_bot_hook_order_message` (inspect its schema first).
+- **MCP:** `send_bot_hook_order_message` with the hook `hash`, optional `key`
+  and the payload; in this tool `flag` is an array (`["TEST"]`). It cannot
+  send prediction payloads.
 - **Strategies/Reactions:** `$.Strategy.action(...)` or the LLM tools send
   signals to the configured `webhook_id`; you do not build the payload.
 - **Browser extension / dashboard Manual Signal:** see `sigrex-integrations`.

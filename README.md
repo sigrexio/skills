@@ -22,7 +22,7 @@ Start with `sigrex-overview`, then load the skill for the task.
 | [`sigrex-webhooks`](sigrex-webhooks/SKILL.md) | Bot and Data Webhooks, the signal payload (incl. `callback`), sending and testing signals |
 | [`sigrex-cex-bots`](sigrex-cex-bots/SKILL.md) | Exchange API keys and CEX Signal Bots: symbols, sizing, lifecycle |
 | [`sigrex-dex-bots`](sigrex-dex-bots/SKILL.md) | Uniswap DEX bots on Polygon/Arbitrum, GasTank, contract addresses and ABIs |
-| [`sigrex-prediction-bots`](sigrex-prediction-bots/SKILL.md) | Polymarket / Outcome.xyz prediction bots (beta, currently disabled), session keys, payloads |
+| [`sigrex-prediction-bots`](sigrex-prediction-bots/SKILL.md) | Polymarket / Outcome.xyz prediction bots (beta), session keys, payloads |
 | [`sigrex-code-strategies`](sigrex-code-strategies/SKILL.md) | Sandboxed JavaScript strategies and Code Reactions, runtime API, forbidden identifiers, tested examples |
 | [`sigrex-llm-trading`](sigrex-llm-trading/SKILL.md) | LLM provider connections, LLM Sessions, prompt design, template variables, AI trading tools, charts |
 | [`sigrex-reactions`](sigrex-reactions/SKILL.md) | Event-driven Data Webhook pipelines with Code or LLM Reactions |
@@ -87,8 +87,8 @@ silent (idempotency, slippage, response schemas, run cadence), the skills say
 so instead of guessing.
 
 Version 2.0 removes features that no longer exist in Sigrex (Telegram
-Signals, the Pine Script Payload Builder) and documents current platform
-state, such as prediction bots being temporarily disabled.
+Signals, the Pine Script Payload Builder) and documents the current platform
+state.
 
 Trading actions are live and potentially irreversible. Every skill instructs
 agents to create resources inactive, test with `TEST` signals, and ask for

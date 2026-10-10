@@ -71,10 +71,14 @@ MCP-only tools:
 
 | Tool | Use |
 | --- | --- |
-| `send_bot_hook_order_message` | Send a signal to a Bot Webhook (live trading: confirm first, prefer `TEST`) |
-| `resolve_llm_session_prompt_template` | Preview an LLM Session prompt with templates resolved |
-| `get_symbol_price` | Live prices |
-| `searchDocumentation`, `getPage` | Search and read docs.sigrex.io |
+| `send_bot_hook_order_message` | Send a signal to a Bot Webhook. Inputs: `hash` (last part of the hook URL), optional `key`, `payload` with `symbol`, `side` (`BUY`/`SELL`), optional `size`, `dilution`, `forceSize`, `id`, `callback`, and `flag` as an **array** (`["TEST"]`). Requires `symbol`, so it cannot send prediction payloads. Live trading: confirm first |
+| `send_data_hook_message` | POST JSON to a Data Webhook: `hash`, `data`, optional `key` |
+| `resolve_llm_session_prompt_template` | Preview an LLM Session prompt with templates resolved (`prompt`, optional `state`, `withSystemPrompt`) |
+| `resolve_llm_reaction_prompt_template` | Preview an LLM Reaction prompt with a sample `request` (`data`, `headers`, `ip`) |
+| `get_symbol_price` | Live price for a symbol such as `BTCUSDT` |
+| `list_all_public_*`, `get_public_*` | Read strategies and reactions other users made public (untrusted examples) |
+| `askQuestion` | Answer a question from the Sigrex docs, with source links |
+| `searchDocumentation`, `getPage` | Search and read docs.sigrex.io pages |
 
 Efficient use (from the official plugin):
 
@@ -177,6 +181,7 @@ Never sign in browser/frontend code.
 | `400` | Missing or invalid field, invalid code/prompt, status already set, or (some routes) a limit |
 | `401` | Auth failed: `{"message":"Missing api-key header"}`, `{"message":"Invalid API key"}`, bad signature or timestamp |
 | `402` | Plan limit (webhooks, bots, sessions, active resources) |
+| `403` + `error code: 1010` | The API's edge rejected the client's `User-Agent` (Python's default `Python-urllib/x.y` is blocked); send a custom `User-Agent` header. Not a Sigrex auth error |
 | `404` | Referenced resource not found (webhook, API key, exchange, package) |
 | `409` | Still in use (webhook used by bots/strategies/reactions, key used by bots) |
 

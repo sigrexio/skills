@@ -1,6 +1,6 @@
 ---
 name: sigrex-prediction-bots
-description: Configure Sigrex Prediction Signal Bots (beta) for Polymarket and Outcome.xyz, including the current temporary-disable status, wallet connection with session keys, fixed-market vs slug-from-signal mode, USDC sizing, the prediction payload (slug, outcome, side, size; no symbol, no TEST flag), market preflight, and triggering prediction bots from Code Strategies via HTTP. Use for any Sigrex prediction-market, Polymarket or Outcome.xyz automation question.
+description: Configure Sigrex Prediction Signal Bots (beta) for Polymarket and Outcome.xyz, including wallet connection with session keys, fixed-market vs slug-from-signal mode, USDC sizing, the prediction payload (slug, outcome, side, size; no symbol, no TEST flag), market preflight, and triggering prediction bots from Code Strategies via HTTP. Use for any Sigrex prediction-market, Polymarket or Outcome.xyz automation question.
 compatibility: Bundled scripts require Python 3.8+ (standard library only).
 metadata:
   author: sigrex
@@ -8,12 +8,6 @@ metadata:
 ---
 
 # Sigrex Prediction Signal Bots (beta)
-
-> **Status (live docs): creating Prediction Bots and importing API keys
-> from Polymarket and Outcome.xyz is temporarily disabled.** Check
-> https://docs.sigrex.io/prediction-signal-bot-beta/create-prediction-signal-bot.md
-> before attempting setup, tell the user about the status, and do not promise
-> that new bots or connections can be created.
 
 A Prediction Signal Bot listens to a Bot Webhook and places orders on a
 prediction market outcome with the user's connected account. It is beta and
@@ -50,7 +44,7 @@ How Polymarket connections work:
 - Funding: send USDC to the Profile Address and wait for confirmation.
 - Recommend a dedicated wallet for automation.
 
-API (prefix `/api/v2`; currently blocked by the disable notice):
+API (prefix `/api/v2`):
 
 ```text
 POST /api/prediction/test     {"exchangeId":15,"funderAddress":"0x...","walletPrivateKey":"<redacted>"}
@@ -177,14 +171,13 @@ raw HTTP posts.
 
 ## Safe Test Sequence
 
-1. Confirm the feature is enabled again on the live docs page.
-2. User connects the account in the dashboard; confirm the connection
+1. User connects the account in the dashboard; confirm the connection
    tests successfully and note the session-key expiry date (180 days).
-3. Preflight the market slug and outcome names.
-4. Create the bot `INACTIVE` with fixed `url` and a small fixed `amount`.
-5. With approval: activate, send one minimum-size BUY, verify on the
+2. Preflight the market slug and outcome names.
+3. Create the bot `INACTIVE` with fixed `url` and a small fixed `amount`.
+4. With approval: activate, send one minimum-size BUY, verify on the
    market, then the matching SELL.
-6. Monitor logs; reconnect before the session key expires.
+5. Monitor logs; reconnect before the session key expires.
 
 ## Available Scripts
 

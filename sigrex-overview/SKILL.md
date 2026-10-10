@@ -53,7 +53,7 @@ skill for the part you are working on.
 | Signal processing | **Bot Webhook** | Receives a signal and fans it out to all attached Signal Bots | No |
 | Execution | **CEX Signal Bot** | Places orders on a CEX with a stored exchange API key | Yes |
 | Execution | **DEX Signal Bot** | Swaps on Uniswap from a per-bot smart contract, gas from the GasTank | Yes |
-| Execution | **Prediction Signal Bot** (beta) | Trades Polymarket / Outcome.xyz outcomes with a session key | Yes (currently disabled, see below) |
+| Execution | **Prediction Signal Bot** (beta) | Trades Polymarket / Outcome.xyz outcomes with a session key | Yes |
 
 ## The Execution Checklist
 
@@ -110,8 +110,8 @@ has ID 2 in this account.
 | Uniswap | DEX | `10` | - | Polygon (`137`) and Arbitrum One (`42161`) |
 | Hyperliquid | CEX | `11` | `12` | USDC only |
 | Bitget | CEX | `13` | `14` | Futures are USD-M only |
-| Polymarket | PREDICTION | `15` | - | Beta; new bots/keys temporarily disabled |
-| Outcome.xyz | PREDICTION | `17` | - | Beta; new bots/keys temporarily disabled |
+| Polymarket | PREDICTION | `15` | - | Beta |
+| Outcome.xyz | PREDICTION | `17` | - | Beta |
 
 Spot and futures on the same exchange need **separate** API-key connections.
 Confirm the live list with `GET /api/v2/exchange` (fields `id`, `type`, `name`,
@@ -163,8 +163,6 @@ signal is always a POST (or email) to a Bot Webhook, or the MCP tool
 - Not documented anywhere, so never claim them: signal idempotency or
   deduplication guarantees, retry behaviour, slippage limits or price
   protection, exact Code Strategy run cadence, response body schemas.
-- **Prediction Signal Bots:** creating bots and importing Polymarket /
-  Outcome.xyz keys is **temporarily disabled** (per the live docs).
 - **Removed, do not recommend:** Telegram Signals and the Pine Script Payload
   Builder no longer exist in Sigrex (their docs pages were deleted). For
   TradingView, put a plain JSON payload in the alert message
