@@ -1,108 +1,163 @@
 ---
 name: sigrex-dex-bots
-description: Configure Sigrex Uniswap DEX Signal Bots, GasTank funding, EVM deployment addresses, and contract ABI interactions on Polygon or Arbitrum. Use when deploying, funding, registering, or troubleshooting Sigrex DEX bots and smart contracts.
+description: Set up and operate Sigrex DEX Signal Bots that swap on Uniswap (Polygon or Arbitrum) from a per-bot smart contract, including BotFactory deployment, Start With / Use All / amount semantics, funding the bot contract, GasTank deposits and the 15% gas buffer, registering the contract via the API, contract addresses, ABIs and troubleshooting suspended bots. Use for any Sigrex DEX bot, Uniswap automation, GasTank or Sigrex smart-contract question.
 metadata:
   author: sigrex
-  version: "1.0"
+  version: "2.0"
 ---
 
 # Sigrex DEX Signal Bots
 
-DEX bots execute on-chain and can move funds. Never guess an address, chain,
-token decimal, enum value, or privileged role. Verify every deployment against
-the live docs and block explorer before signing a transaction.
+A DEX Signal Bot is a **smart contract owned by the user** that holds the
+tokens it trades. When its Bot Webhook receives a matching signal, a Sigrex
+executor calls the contract's `executeSwap(side)`, which swaps on Uniswap.
+Gas for that call is paid from the user's **GasTank** balance. These are
+on-chain actions with real funds: never guess an address, chain, decimals or
+enum value, and verify everything on the block explorer before signing.
 
-## Supported Networks
+## Supported Networks And Addresses
 
-The documented DEX integration is Uniswap spot on Polygon and Arbitrum. Key
-the deployment by `(chainId, address)` because the same address may appear on
-different chains.
+DEX catalog entry: Uniswap, `exchangeId` `10`, spot only.
 
-| Network | Chain ID | GasTank | BotFactory |
-| --- | ---: | --- | --- |
-| Arbitrum One | `42161` | `0x3d152e7B21b91295a136CEB42bA5A0cB0d4d6c74` | `0xc44771aEedE1F80756874201C58b47e7ea49E174` |
-| Polygon | `137` | `0x4B3632c58cAC8481a241b703c8784C836E023A7D` | `0x3d152e7B21b91295a136CEB42bA5A0cB0d4d6c74` |
+| Network | Chain ID | Native gas token | GasTank | BotFactory |
+| --- | ---: | --- | --- | --- |
+| Arbitrum One | `42161` | ETH | `0x3d152e7B21b91295a136CEB42bA5A0cB0d4d6c74` | `0xc44771aEedE1F80756874201C58b47e7ea49E174` |
+| Polygon PoS | `137` | POL | `0x4B3632c58cAC8481a241b703c8784C836E023A7D` | `0x3d152e7B21b91295a136CEB42bA5A0cB0d4d6c74` |
 
-These values are documentation snapshots. Re-check:
-https://docs.sigrex.io/dex-signal-bot/deployment-addresses.md and the linked
-explorer before transacting.
+The same address `0x3d15...6c74` is the GasTank on Arbitrum but the
+BotFactory on Polygon: always key contracts by `(chainId, address)`.
+Re-check https://docs.sigrex.io/dex-signal-bot/deployment-addresses.md and
+the explorer (arbiscan.io / polygonscan.com) before any transaction.
 
-## Deployment Workflow
+## How It Works
 
-1. Select the chain and token pair; verify token addresses and decimals.
-2. Use the chain's BotFactory to create the bot with token addresses, starting
-   amount, `useAll`, and starting side.
-3. Record the resulting bot contract address and transaction.
-4. Fund the bot with the correct starting token: quote token for `BUY`, base
-   token for `SELL`.
-5. Deposit native gas into the chain's GasTank for automated execution.
-6. Register the contract with the DEX Signal Bot API.
-7. Attach a Bot Webhook, keep the bot inactive, and test before activation.
+1. **Deploy:** in the Sigrex dashboard the user picks chain + Uniswap, base
+   and quote token addresses, Start With, amount / Use All. Their wallet
+   signs `BotFactory.createBot(...)`, which deploys a SignalBot contract owned
+   by them.
+2. **Fund the bot:** send the starting token to the **bot contract address**
+   right after creation.
+3. **Fund gas:** deposit native token into the chain's **GasTank**.
+4. **Register:** the bot is stored in Sigrex with its webhook and symbol
+   (dashboard, or `POST /bot/signal/dex` with the contract address).
+5. **Execute:** signals with the bot's `symbol` make the executor call
+   `executeSwap`. Cost = measured gas x gas price x 1.15, burned from the
+   owner's GasTank balance. If the balance is too low, the transaction
+   reverts and the **bot is automatically suspended**.
 
-## DEX API Configuration
+Manual alternative: the user can trigger the swap from their own wallet
+(e.g. MetaMask). Then the wallet pays gas directly, the GasTank is not used,
+and no 15% buffer is burned.
 
-Create under `/api/v2/bot/signal/dex`:
+## Bot Strategy Settings (on-chain)
+
+| Setting | Meaning |
+| --- | --- |
+| Base token | ERC-20 being bought/sold (e.g. WETH) |
+| Quote token | ERC-20 paid/received (e.g. USDC) |
+| **Start With = BUY** | First trade buys base with quote. Fund the bot with the **quote** token; amount is in quote units |
+| **Start With = SELL** | First trade sells base for quote. Fund the bot with the **base** token; amount is in base units |
+| **Amount** | Fixed amount of the starting token per trade. If the balance falls below it (e.g. after a loss), the swap does not happen |
+| **Use All** | Trade 100% of the available balance each time; trades shrink after losses, never stall |
+
+These live in the contract (`setStrategy` / `getStrategy`, struct
+`{useAll, amount, token0, token1, startWith}`), not in the REST bot. On-chain
+amounts are integers in the token's smallest unit (USDC has 6 decimals, WETH
+18); the dashboard converts for you. Deposits to and withdrawals from the
+bot's token balance are possible at any time from the dashboard.
+
+## Register Or Manage Via API (prefix `/api/v2`)
+
+Find the factory record first, then register the deployed contract:
+
+```text
+GET /exchange/dex/{chainId}                          DEX exchanges on a chain
+GET /bot/signal/dex/factory/{chainId}/{exchangeId}   e.g. /bot/signal/dex/factory/42161/10 -> factory_id
+```
 
 ```json
+POST /api/v2/bot/signal/dex
 {
-  "name": "WETH-USDC bot",
-  "webhook_id": 123,
-  "factory_id": 10,
+  "name": "WETH-USDC arb",
+  "webhook_id": 101,
+  "factory_id": 3,
   "chain_id": 42161,
-  "address": "0xDeployedBotContract",
+  "address": "0xYourDeployedSignalBotContract",
   "symbol": "WETHUSDC",
   "delay": 10
 }
 ```
 
-Required fields are `webhook_id`, `factory_id`, `chain_id`, `symbol`, and
-`address`. Optional fields include `name`, `folder_id`, and `delay`.
+| Field | Required | Notes |
+| --- | --- | --- |
+| `webhook_id` | yes | Bot Webhook to listen to |
+| `factory_id` | yes | From the factory lookup above |
+| `chain_id` | yes | `42161` or `137` |
+| `address` | yes | Deployed SignalBot contract; invalid addresses return `400` |
+| `symbol` | yes | Label used to match signals, e.g. `WETHUSDC`; signals must use the same string |
+| `delay` | no | Frequency limit (same meaning as on CEX bots) |
+| `name`, `folder_id` | no | |
+
+Updates (`PUT /bot/signal/dex/{id}`) accept only `webhook_id` (required),
+`symbol` (required), `name`, `folder_id`, `delay`. The chain, factory and
+address are fixed. To change tokens, amount or Use All, change the contract
+strategy from the dashboard.
 
 ```text
-GET/POST /bot/signal/dex
-GET/PUT/DELETE /bot/signal/dex/{id}
-GET /bot/signal/dex/total
-GET /bot/signal/dex/{chainId}/{address}
-GET /bot/signal/dex/factory/{chainId}/{exchangeId}
-PUT /bot/signal/dex/{id}/status
+GET  /bot/signal/dex                 GET /bot/signal/dex/{id}          GET /bot/signal/dex/total
+GET  /bot/signal/dex/{chainId}/{address}                             look up by contract
+PUT  /bot/signal/dex/{id}/status     {"status":"ACTIVE"|"INACTIVE"}  (402 = DEX bot limit)
+DELETE /bot/signal/dex/{id}
+GET|POST /bot/signal/dex/folder, GET /bot/signal/dex/folder/root, GET|PUT|DELETE /bot/signal/dex/folder/{id}
 ```
 
-The REST schema does not configure token addresses, amount, `useAll`, or
-`startWith`; those belong to the on-chain strategy.
+There is no DEX duplicate endpoint, because each bot is its own contract.
 
-## GasTank
+## Signals
 
-GasTank is chain-specific and non-custodial. Unused deposits can be withdrawn.
-Automated execution charges measured gas plus a documented 15% buffer. If the
-balance is insufficient, the transaction reverts and the DEX bot is suspended.
-Manual wallet execution pays gas directly and bypasses GasTank.
+DEX bots use the standard bot payload: `{"symbol":"WETHUSDC","side":"BUY"}`.
+The swap amount comes from the contract strategy (fixed or Use All). Spot
+only: `BUY` swaps quote to base, `SELL` swaps base to quote. Test with
+`flag: "TEST"` before live signals.
 
-The documented ABI includes:
+## GasTank (user operations)
 
-```solidity
-deposit() payable
-withdraw(uint256 amount)
-getGas() view returns (uint256)
-getAddressGas(address account) view returns (uint256)
-getFee() view returns (uint256)
-burn(address from, uint256 amount, bytes uid)
-```
+| Function | Use |
+| --- | --- |
+| `deposit()` payable | Add native gas token to your balance |
+| `withdraw(uint256 amount)` | Withdraw unused balance (wei); funds are never locked |
+| `getGas() view` | Balance of `msg.sender` |
+| `getAddressGas(address) view` | Balance of any owner address |
+| `getFee() view` | Current fee parameter |
 
-The current ABI requires all three `burn` arguments; do not use simplified
-two-argument examples without checking the ABI version.
+`burn`, `transfer`, `addFacility`, `addPipe`, `setFee`, `pause` and
+ownership functions are privileged (owner/executor); users never call them.
+Keep a healthy balance and watch it in the dashboard; a dry tank suspends
+bots.
 
-## Contract ABI Safety
+## Contract Safety Notes
 
-BotFactory exposes `createBot(bytes uid,address token0,address token1,uint256
-amount,bool useAll,uint8 startWith)` and bot enumeration/deletion methods.
-SignalBot exposes `executeSwap(uint8 side)`, `setStrategy(...)`,
-`getStrategy()`, and token `withdraw(...)`. `startWith` and `side` encode an
-enum, but the docs do not publish the numeric BUY/SELL mapping or UID
-convention. Never guess them or call privileged methods from an untrusted
-client.
+- Full function tables: `references/contracts.md`. ABIs:
+  https://github.com/sigrexio/ABI.
+- `createBot(bytes uid, address token0, address token1, uint256 amount,
+  bool useAll, uint8 startWith)`: the `uid` convention and the numeric
+  values of the `OrderSide` enum (`startWith`, `executeSwap(side)`) are **not
+  published**. Do not hand-craft these calls; use the dashboard.
+- The bot contract uses role-based access control; only authorized accounts
+  can call `executeSwap`, `setStrategy`, `withdraw`, `pause`.
+- Not documented: slippage limits, MEV protection, price limits, pool fee
+  tier selection, approval handling, retry behaviour. Treat them as open
+  risks, prefer liquid pairs, and size small first.
 
-The docs do not specify slippage, approvals, MEV protection, price limits,
-token decimals, or retry behavior. Treat those as unresolved risks.
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Bot suspended | GasTank balance too low on that chain; top up, then reactivate |
+| Signal logged, no swap | Symbol mismatch; bot inactive; balance below the fixed amount (Use All off); `TEST` flag |
+| `SwapFailed` event on-chain | Read the reason string; often liquidity/route or balance |
+| `400 invalid contract address` on register | Wrong chain ID for that address, or not a Sigrex SignalBot |
+| Wrong token sold first | Start With and funding token do not match |
 
 ## Canonical Docs
 
@@ -110,7 +165,5 @@ token decimals, or retry behavior. Treat those as unresolved risks.
 - https://docs.sigrex.io/dex-signal-bot/gas-tank.md
 - https://docs.sigrex.io/dex-signal-bot/deployment-addresses.md
 - https://docs.sigrex.io/dex-signal-bot/contract-abi.md
-- https://docs.sigrex.io/dex-signal-bot/contract-abi/gastank-abi.md
-- https://docs.sigrex.io/dex-signal-bot/contract-abi/botfactory-abi.md
-- https://docs.sigrex.io/dex-signal-bot/contract-abi/signalbot-abi.md
+- https://docs.sigrex.io/api-reference/reference/signal-bots/dex-bot.md
 - https://github.com/sigrexio/ABI
