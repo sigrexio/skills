@@ -5,7 +5,9 @@ https://docs.sigrex.io/startegies/code.md, https://docs.sigrex.io/reaction/code-
 and the changelog. Code runs as the body of an async function in a strict
 sandbox; nothing outside `$` and standard JavaScript built-ins (`Math`,
 `JSON`, `Date`, `Number`, `String`, `Array`, `Object`, ...) is available,
-and the forbidden identifiers listed in `SKILL.md` must not appear anywhere.
+the forbidden identifiers listed in `SKILL.md` must not appear anywhere,
+and the code rules there apply (declared variables, loops that end by their
+condition, read-only built-ins and `$.Ta`, size limits).
 
 ## `$.Action`
 
