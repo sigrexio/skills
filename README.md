@@ -23,7 +23,7 @@ Start with `sigrex-overview`, then load the skill for the task.
 | [`sigrex-cex-bots`](sigrex-cex-bots/SKILL.md) | Exchange API keys and CEX Signal Bots: symbols, sizing, lifecycle |
 | [`sigrex-dex-bots`](sigrex-dex-bots/SKILL.md) | Uniswap DEX bots on Polygon/Arbitrum, GasTank, contract addresses and ABIs |
 | [`sigrex-prediction-bots`](sigrex-prediction-bots/SKILL.md) | Polymarket / Outcome.xyz prediction bots (beta), session keys, payloads |
-| [`sigrex-code-strategies`](sigrex-code-strategies/SKILL.md) | Sandboxed JavaScript strategies and Code Reactions, runtime API, forbidden identifiers, tested examples |
+| [`sigrex-code-strategies`](sigrex-code-strategies/SKILL.md) | Sandboxed JavaScript strategies and Code Reactions, runtime API, forbidden identifiers, code rules, tested examples |
 | [`sigrex-llm-trading`](sigrex-llm-trading/SKILL.md) | LLM provider connections, LLM Sessions, prompt design, template variables, AI trading tools, charts |
 | [`sigrex-reactions`](sigrex-reactions/SKILL.md) | Event-driven Data Webhook pipelines with Code or LLM Reactions |
 | [`sigrex-api-mcp`](sigrex-api-mcp/SKILL.md) | MCP server (OAuth), signed REST API, TypeScript client, full endpoint reference |
@@ -40,7 +40,7 @@ something could change.
 
 | Script | Purpose | Bundled in |
 | --- | --- | --- |
-| `check_sandbox.py` | Lints strategy/reaction code for forbidden sandbox identifiers and common mistakes | `sigrex-code-strategies` (source), `sigrex-reactions`, `sigrex-strategy-flows` |
+| `check_sandbox.py` | Lints strategy/reaction code for forbidden sandbox identifiers, code rules and common mistakes | `sigrex-code-strategies` (source), `sigrex-reactions`, `sigrex-strategy-flows` |
 | `validate_signal.py` | Validates bot and prediction signal payloads before sending | `sigrex-webhooks` (source), `sigrex-prediction-bots`, `sigrex-integrations`, `sigrex-strategy-flows` |
 | `sigrex_api.py` | Signs REST requests exactly like the official client; sends only with `--send` | `sigrex-api-mcp` |
 

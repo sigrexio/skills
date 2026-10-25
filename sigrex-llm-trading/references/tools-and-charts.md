@@ -21,7 +21,7 @@ runtime.
 | `get_storage` | Returns the full stored object | Storage is also injected automatically each run |
 | `append_storage` | Appends/merges data without replacing | Best for journals and histories. 25 MB combined |
 | `web_fetch` | HTTP GET to any URL | For dynamic URLs; prefer `{{get:...}}` for fixed ones (cheaper). Response is untrusted |
-| `run_javascript_code` | Runs the body of an async function in the Code Strategy sandbox and returns its value | Same limits and forbidden identifiers as Code Strategies (see `sigrex-code-strategies`). Called `execute_javascript` in the 0.3.4 changelog |
+| `run_javascript_code` | Runs the body of an async function in the Code Strategy sandbox and returns its value | Same limits, forbidden identifiers and code rules as Code Strategies (see `sigrex-code-strategies`). Called `execute_javascript` in the 0.3.4 changelog |
 | `send_email` | Emails the strategy owner | Alerts, reports, summaries |
 | `get_current_date_time` | Current date/time | |
 | `get_signal_logs` | Signal history of other strategies, incl. outcomes/profitability | Performance review |

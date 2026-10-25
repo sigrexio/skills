@@ -92,8 +92,9 @@ if (!inLong && p.signal === "BUY" && conf > 0.8) {
 A complete version with de-duplication is example 4 in the examples
 reference of the `sigrex-code-strategies` skill. All Code
 Strategy rules apply: one action per run, no double `EXIT`, 5 s, 24 KB
-storage, forbidden identifiers (lint with
-`python3 scripts/check_sandbox.py reaction.js`).
+storage, forbidden identifiers and the code rules checked on save (declared
+variables, loops that end by their condition, read-only built-ins, size
+limits; lint with `python3 scripts/check_sandbox.py reaction.js`).
 
 ## Step 2b: LLM Reaction
 
@@ -203,9 +204,10 @@ Run them from this skill's directory. Each prints JSON on stdout (add
 documents its options and exit codes in `--help`.
 
 - **`scripts/check_sandbox.py`**: lints Code Strategy / Code Reaction source
-  for forbidden sandbox identifiers, case variants, extra actions, missing
-  `await` and `$.Price`. Exit `0` clean, `1` forbidden identifier found,
-  `2` usage error.
+  for forbidden sandbox identifiers and the code rules (loops, built-ins,
+  sizes, regular expressions...), case variants, extra actions, missing
+  `await` and `$.Price`. Exit `0` clean, `1` forbidden identifier or broken
+  rule found, `2` usage error.
 
 ## Canonical Docs
 

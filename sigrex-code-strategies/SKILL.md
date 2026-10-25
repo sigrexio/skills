@@ -1,10 +1,10 @@
 ---
 name: sigrex-code-strategies
-description: Write, validate, deploy and debug Sigrex Code Strategies and Code Reactions, the sandboxed JavaScript that runs on Sigrex and emits LONG/SHORT/EXIT signals. Covers the execution model (one action per run, one position per strategy, no double EXIT), API config fields (send_signal, webhook_id, symbol, use_price), the $ runtime ($.Strategy, $.Storage, $.Http, $.Env, $.Ta, $.getExchangeRate, $.Request), limits, the forbidden-identifier list that silently breaks code (close, alert, top, self, fetch, console...), a sandbox lint script, and tested templates. Use whenever creating or changing Sigrex strategy or reaction code.
+description: Write, validate, deploy and debug Sigrex Code Strategies and Code Reactions, the sandboxed JavaScript that runs on Sigrex and emits LONG/SHORT/EXIT signals. Covers the execution model (one action per run, one position per strategy, no double EXIT), API config fields (send_signal, webhook_id, symbol, use_price), the $ runtime ($.Strategy, $.Storage, $.Http, $.Env, $.Ta, $.getExchangeRate, $.Request), limits, the forbidden-identifier list that silently breaks code (close, alert, top, self, fetch, console...), the code rules checked on save (declared variables, bounded loops, read-only built-ins, size limits), a sandbox lint script, and tested templates. Use whenever creating or changing Sigrex strategy or reaction code.
 compatibility: Bundled scripts require Python 3.8+ (standard library only).
 metadata:
   author: sigrex
-  version: "2.0"
+  version: "2.1"
 ---
 
 # Sigrex Code Strategies And Code Reactions
@@ -164,8 +164,30 @@ those values from arrays or compute the indicator by hand.
 python3 scripts/check_sandbox.py strategy.js
 ```
 
-It exits `1` on any forbidden identifier and warns about case variants,
+It exits `1` on any forbidden identifier or broken code rule it can detect,
+and warns about case variants, undeclared variables, `this` outside a class,
 multiple actions, missing `await`, and `$.Price`.
+
+## Code Rules (checked on save)
+
+On create and update the API also checks how the code is written and answers
+`400` with the reason when a rule is broken. Write code that already follows
+them:
+
+| Rule | Write this instead |
+| --- | --- |
+| Plain JavaScript, at most 100,000 characters | No TypeScript types, no `import` / `export` |
+| Declare every variable | `let total = 0`, not `total = 0` |
+| Built-ins (`Math`, `Object`, `JSON`, `Array`...) and `$.Ta` are read-only | Keep helpers in your own objects: `const fmt = { pct: (x) => x.toFixed(2) }`, never `Math.pct = ...` |
+| Every loop must end by its own condition | `for (let i = 0; i < prices.length; i++)`, not `while (true) { ... break; }` or `for (;;)` |
+| Loop bounds up to 10,000,000 | `i < 1e12` is rejected |
+| Sizes up to 1,000,000 | Applies to `new Array(n)`, typed arrays, `Array.from({ length: n })`, `.repeat(n)`, `.padStart(n)`, `.padEnd(n)` |
+| Regular expressions as literals, without nested quantifiers | `/btc/i`, not `new RegExp(text)` or `/(a+)+/` |
+| `this` only inside class methods | Plain objects and functions |
+| No prototype access | `Object.hasOwn(obj, key)`, not `Object.prototype.hasOwnProperty.call(obj, key)` |
+| No `arguments`, `with` or `debugger` | Rest parameters: `(...args) => args.length` |
+
+The lint script below catches most of these before you upload.
 
 ## Skeleton (copy this)
 
@@ -232,7 +254,8 @@ self-stopping guard, managing other strategies with the API client):
 
 1. Write the code; run `scripts/check_sandbox.py`.
 2. Create the strategy via MCP (`post_strategy_code`) or REST; the API
-   validates code on create/update and returns `400` for invalid code.
+   validates code on create/update and returns `400` with the reason
+   (forbidden identifier or code rule) for invalid code.
 3. Confirm Bot Webhook, bot symbol and signal `symbol` are identical; keep
    bots `INACTIVE` or rely on `TEST` signals while observing.
 4. Activate the strategy (approval required), watch storage and signal logs
@@ -259,9 +282,10 @@ Run them from this skill's directory. Each prints JSON on stdout (add
 documents its options and exit codes in `--help`.
 
 - **`scripts/check_sandbox.py`**: lints Code Strategy / Code Reaction source
-  for forbidden sandbox identifiers, case variants, extra actions, missing
-  `await` and `$.Price`. Exit `0` clean, `1` forbidden identifier found,
-  `2` usage error.
+  for forbidden sandbox identifiers and the code rules (loops, built-ins,
+  sizes, regular expressions...), case variants, extra actions, missing
+  `await` and `$.Price`. Exit `0` clean, `1` forbidden identifier or broken
+  rule found, `2` usage error.
 
 ## Canonical Docs
 

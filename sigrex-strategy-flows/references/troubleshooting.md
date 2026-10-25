@@ -21,6 +21,7 @@ Read-only checks first; changes only with approval.
 | Strategy never acts | Status `INACTIVE` or suspended | `GET /strategy/code/{id}`; check last run time |
 | | `send_signal` false, or no `webhook_id`/`symbol` | Update with the full body |
 | | Suspended for a forbidden identifier or limit breach | Lint the live code with `python3 scripts/check_sandbox.py <file>`; check runtime and HTTP usage |
+| Create/update returns `400` with a code-rule message | Code breaks a rule checked on save (see `sigrex-code-strategies`, Code Rules) | Fix what the message names, e.g. declare the variable with `let`, give the loop a real condition, move helpers out of built-ins |
 | | Entry condition never true | Read storage debug fields; evaluate conditions against current data |
 | | Thinks a position is open (`lastTrigger` = `LONG`/`SHORT`) after test runs or manual closes | Reset triggers when the exchange is flat |
 | | Second `EXIT` rejected | Exit only when `lastTrigger` is `LONG`/`SHORT` |

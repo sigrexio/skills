@@ -134,8 +134,9 @@ POST /api/v2/strategy/code
 }
 ```
 
-   A `400` with an invalid-code message usually means a forbidden identifier
-   or a syntax error.
+   A `400` with an invalid-code message names the problem: a forbidden
+   identifier, a broken code rule (undeclared variable, `while (true)`, a
+   change to a built-in, a size over the limit) or a syntax error.
 4. **Rung 2:** `PUT /api/v2/strategy/code/401/status {"status":"ACTIVE"}`
    with bots inactive. Read `GET /strategy/code/401` (storage incl. your
    `S.dbg`/`S.lastSignal`) over several runs.
@@ -297,9 +298,10 @@ Run them from this skill's directory. Each prints JSON on stdout (add
 documents its options and exit codes in `--help`.
 
 - **`scripts/check_sandbox.py`**: lints Code Strategy / Code Reaction source
-  for forbidden sandbox identifiers, case variants, extra actions, missing
-  `await` and `$.Price`. Exit `0` clean, `1` forbidden identifier found,
-  `2` usage error.
+  for forbidden sandbox identifiers and the code rules (loops, built-ins,
+  sizes, regular expressions...), case variants, extra actions, missing
+  `await` and `$.Price`. Exit `0` clean, `1` forbidden identifier or broken
+  rule found, `2` usage error.
 - **`scripts/validate_signal.py`**: checks a bot signal (or a prediction
   payload with `--prediction`) against the published schema and redacts
   `key`. Exit `0` valid, `1` invalid, `2` usage error.

@@ -1,6 +1,7 @@
 # Sigrex Code Strategy Examples
 
-Complete strategies that pass `scripts/check_sandbox.py`. Each lists the
+Complete strategies that pass `scripts/check_sandbox.py` and the code rules
+checked on save (see `SKILL.md`). Each lists the
 strategy settings and the `$.Env` variables the user must create. They are
 starting points, not trading advice: Sigrex has no backtesting, so start
 inactive, use `TEST` signals, then the smallest live size.
