@@ -19,7 +19,7 @@ answers 400 when one is broken. This checker reports:
            assignment to a name never declared, `this` outside a class
   warning  more than one $.Strategy.action call, $.Price use, missing awaits
 
-Source of the identifier list: https://docs.sigrex.io/startegies/code.md
+Source of the identifier list: https://docs.sigrex.io/strategies/code.md
 Requires Python 3.8+ (standard library only).
 """
 

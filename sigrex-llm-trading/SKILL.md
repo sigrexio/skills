@@ -244,9 +244,9 @@ the user explicitly wants autonomy.
 
 ## Canonical Docs
 
-- https://docs.sigrex.io/startegies/llm-session.md
-- https://docs.sigrex.io/startegies/llm-session/signal-generation.md
-- https://docs.sigrex.io/startegies/llm-session/chart-setup.md
+- https://docs.sigrex.io/strategies/llm-session.md
+- https://docs.sigrex.io/strategies/llm-session/signal-generation.md
+- https://docs.sigrex.io/strategies/llm-session/chart-setup.md
 - https://docs.sigrex.io/llm/connecting-llm-service.md
 - https://docs.sigrex.io/api-reference/reference/strategies/llm-sessions.md
 - https://docs.sigrex.io/api-reference/reference/api-keys/llm-api-keys.md
