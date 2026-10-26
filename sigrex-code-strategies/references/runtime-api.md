@@ -1,7 +1,7 @@
 # Sigrex `$` Runtime Reference
 
 Everything a Code Strategy or Code Reaction can use. Source:
-https://docs.sigrex.io/startegies/code.md, https://docs.sigrex.io/reaction/code-reaction.md
+https://docs.sigrex.io/strategies/code.md, https://docs.sigrex.io/reaction/code-reaction.md
 and the changelog. Code runs as the body of an async function in a strict
 sandbox; nothing outside `$` and standard JavaScript built-ins (`Math`,
 `JSON`, `Date`, `Number`, `String`, `Array`, `Object`, ...) is available,

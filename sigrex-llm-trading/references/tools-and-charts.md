@@ -1,8 +1,8 @@
 # LLM Tools, Chart Options And Enums
 
 Reference for LLM Sessions and LLM Reactions. Source:
-https://docs.sigrex.io/startegies/llm-session/signal-generation.md,
-https://docs.sigrex.io/startegies/llm-session/chart-setup.md, the API
+https://docs.sigrex.io/strategies/llm-session/signal-generation.md,
+https://docs.sigrex.io/strategies/llm-session/chart-setup.md, the API
 reference and the changelog.
 
 ## Tool Reference
