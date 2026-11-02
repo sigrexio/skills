@@ -27,7 +27,7 @@ Read-only checks first; changes only with approval.
 | | Second `EXIT` rejected | Exit only when `lastTrigger` is `LONG`/`SHORT` |
 | | Flip attempted in one run | `EXIT` this run, open the other side on a later run |
 | | `$.Price` undefined | `use_price` off; use `$.getExchangeRate` |
-| | HTTP data missing | 1750 ms timeout, non-200 status, 5 s cache returning stale data |
+| | HTTP data missing | 1750 ms timeout, non-200 status, 5 s cache returning stale data, `status: 0` from the 30-calls-per-run or 5 MB response limit (`text` says which) |
 | LLM Session never trades | `send_signal` false, or prompt rules never satisfied | Read stored responses; preview with `resolve_llm_session_prompt_template` |
 | | Chart enabled with a text-only model | Session will not run; switch to a vision model or disable the chart |
 | | Timeout (long tool chains) | Lower work per run; see the interval/timeout table |
