@@ -113,6 +113,8 @@ Full reference: `references/runtime-api.md`.
 | Execution time per run | 5000 ms |
 | Each HTTP request | 1750 ms timeout |
 | HTTP cache | 5 s per identical request (`response.cache` tells you) |
+| HTTP calls | 30 per run; extra calls return `status: 0` (`generateSignature` doesn't count) |
+| HTTP response | 5 MB; larger bodies return `status: 0` |
 | Storage | 24 KB JSON |
 | Actions | 1 per run, 5 per second globally |
 | Consecutive `EXIT` | not allowed |

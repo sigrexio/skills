@@ -102,8 +102,17 @@ rate is available, so always check.
 Every method resolves to `{ status: number, text: string, cache: boolean }`.
 `text` is the raw body, so `JSON.parse` it yourself inside `try/catch`.
 Identical requests within 5 seconds return the cached response
-(`cache: true`); add a changing query parameter only if freshness truly
-matters and the API allows it.
+(`cache: true`), failed ones included, and an identical GET made while the
+first is still on its way shares its result; add a changing query parameter
+only if freshness truly matters and the API allows it.
+
+A run can make at most 30 HTTP calls (`get`, `post`, `put`, `delete`;
+`generateSignature` doesn't count), and response bodies are limited to 5 MB.
+Over either limit the call resolves to `{ status: 0, text }` with the reason
+in `text` instead of throwing, and the strategy keeps running. Candle data is
+far below 5 MB (1000 Binance klines are about 170 KB); request one symbol
+rather than all-symbol endpoints such as Binance's full `exchangeInfo`
+(about 17 MB).
 
 ```js
 const res = await $.Http.get("https://data-api.binance.vision/api/v3/ticker/price", { symbol: "BTCUSDT" });
