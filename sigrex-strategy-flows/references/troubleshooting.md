@@ -51,7 +51,7 @@ Read-only checks first; changes only with approval.
 | --- | --- | --- |
 | CEX rejected | Below minimum notional | Raise `amount`/`size` above the pair minimum |
 | | Insufficient balance or wrong wallet (spot vs futures) | Fund the right account; key for the right product |
-| | API key revoked/expired or lacking trade permission | `POST /api/exchange/test`; recreate the key |
+| | API key revoked/expired or lacking trade permission | `POST /api/exchange/test` (REST only); recreate the key |
 | | Close size wrong | Close `size` is base currency |
 | | Futures settings (leverage, margin or position mode) | Check on the exchange |
 | DEX swap failed or bot suspended | GasTank empty on that chain | Top up, then reactivate |

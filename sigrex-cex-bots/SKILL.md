@@ -48,6 +48,9 @@ Fields: `exchangeId` (required, number), `publicKey` (required),
 string). Sigrex validates the key with a live test request on creation;
 invalid keys return `400`.
 
+Both routes are REST only. Over MCP there is no tool for them: the user adds
+the key in the dashboard under **API connection** → **Exchange**.
+
 Rules:
 
 - **One connection per product.** Spot and futures on the same exchange need
@@ -151,7 +154,8 @@ To run the same setup on another symbol: duplicate, then update `symbol`,
 
 ## Test And Activate
 
-1. `POST /api/exchange/test` passes, then create the connection.
+1. `POST /api/exchange/test` passes, then create the connection (REST), or
+   the user adds the key in the dashboard.
 2. Bot Webhook `ACTIVE`, bot `INACTIVE`.
 3. Send `{"symbol":"<bot symbol>","side":"BUY","flag":"TEST"}` (plus `key`);
    check the signal log.

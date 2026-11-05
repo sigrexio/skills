@@ -44,10 +44,12 @@ GET  /api/v2/api/llm                          your connections (llm_api_id value
 DELETE /api/v2/api/llm/{id}                   400 while a strategy uses it
 ```
 
-Sigrex test-calls the provider on creation; an invalid key or an account
-without credits fails. The API key cannot be edited (delete and recreate);
-the model can be changed freely. Keys are encrypted and decrypted only at
-runtime. Charts need a vision-capable model.
+`POST /api/llm` is REST only; over MCP, the user adds the key in the
+dashboard under **API connection** → **LLM Provider**. Sigrex test-calls the
+provider on creation; an invalid key or an account without credits fails.
+The API key cannot be edited (delete and recreate); the model can be changed
+freely. Keys are encrypted and decrypted only at runtime. Charts need a
+vision-capable model.
 
 ## Step 2: Create The Session
 
