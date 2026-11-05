@@ -16,7 +16,7 @@ agent supports it.
 | --- | --- | --- |
 | Endpoint | `https://mcp.sigrex.io` (Streamable HTTP) | `https://api.sigrex.io/api/v2/...` |
 | Auth | OAuth sign-in in the browser; no keys to copy | `api-key`, `timestamp`, `signature` headers |
-| Covers | Full account (resources, signals, prices, prompt preview, docs search) | Resource management (no signal sending) |
+| Covers | Resources, signals, prices, prompt preview, docs search; **not** adding or testing API keys | Resource management, including adding API keys (no signal sending) |
 | Risk | Full access incl. live trades | Full access with the API secret |
 
 ## MCP Server
@@ -66,6 +66,12 @@ plugin documents names that follow the REST routes, `<method>_<path>`, with
 | `GET /api/llm/models/{serviceId}` | `get_api_llm_models_serviceId` |
 | `GET /webhook/bot` | `get_webhook_bot` |
 | `GET /exchange/with-exchange-rate` | `get_exchange_with_exchange_rate` |
+
+Routes with **no** MCP tool: adding and testing API keys
+(`POST /api/exchange`, `POST /api/exchange/test`, `POST /api/llm`,
+`POST /api/prediction`, `POST /api/prediction/test`). Use the REST API for
+those, or have the user add the keys in the dashboard under
+**API connection**.
 
 MCP-only tools:
 

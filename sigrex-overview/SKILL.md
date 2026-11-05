@@ -126,7 +126,7 @@ LLM provider IDs (`serviceId`) are listed in `sigrex-llm-trading`.
 
 | Channel | Use it for | Auth |
 | --- | --- | --- |
-| **MCP server** `https://mcp.sigrex.io` (preferred) | Everything: list/create/update resources, send signals, preview prompts, prices, docs search | OAuth in the browser; no keys to copy |
+| **MCP server** `https://mcp.sigrex.io` (preferred) | Everything except adding or testing exchange, prediction and LLM API keys (use REST or the dashboard): list/create/update resources, send signals, preview prompts, prices, docs search | OAuth in the browser; no keys to copy |
 | **REST API** `https://api.sigrex.io/api/v2` | Programmatic management from your own backend | `api-key` + `timestamp` + HMAC-SHA256 or ML-DSA44 `signature` |
 | **Bot Webhook URL** / `<hash>@sigrex.io` | Sending a trading signal | Optional `key` inside the JSON payload |
 | **Data Webhook URL** | Sending event data to Reactions | Optional `X-Key` header |

@@ -12,6 +12,9 @@ difference.
 - **Host:** `https://api.sigrex.io`. Every path starts with `/api/v2`; the
   tables below omit that prefix for readability, but the prefix **is part of
   the signed path**.
+- **MCP:** tools are named after these routes (see `SKILL.md`), except the
+  API-key `POST` routes (create and test), marked *REST only* below. Over
+  MCP, the user adds keys in the dashboard under **API connection**.
 - **Auth headers on every request:** `api-key`, `timestamp` (Unix seconds),
   `signature`. See `SKILL.md` for the exact signing algorithm.
 - **Bodies:** JSON with `Content-Type: application/json`. Field names are
@@ -53,9 +56,9 @@ difference.
 | Method | Path (after `/api/v2`) | Purpose | Notable errors |
 | --- | --- | --- | --- |
 | GET | `/api/exchange` | Get all exchange API keys for user | - |
-| POST | `/api/exchange` | Create a new exchange API key | `400` Missing required fields or invalid credentials; `404` Exchange not found |
+| POST | `/api/exchange` | Create a new exchange API key (REST only) | `400` Missing required fields or invalid credentials; `404` Exchange not found |
 | GET | `/api/exchange/bot/signal/{id}?page=&limit=` | Get signal bots that use an API key | `400` Missing id, page, or limit |
-| POST | `/api/exchange/test` | Test exchange API key credentials | `400` Missing required fields or invalid credentials; `404` Exchange not found |
+| POST | `/api/exchange/test` | Test exchange API key credentials (REST only) | `400` Missing required fields or invalid credentials; `404` Exchange not found |
 | DELETE | `/api/exchange/{id}` | Delete an exchange API key | `400` Missing api id; `404` API key not found; `409` API key is in use by signal bots |
 | PUT | `/api/exchange/{id}/status` | Update API key status | `400` Missing id or invalid status; `404` API key not found |
 
@@ -89,7 +92,7 @@ Body for `PUT /api/exchange/{id}/status`:
 | Method | Path (after `/api/v2`) | Purpose | Notable errors |
 | --- | --- | --- | --- |
 | GET | `/api/llm` | Get all LLM API keys for user | - |
-| POST | `/api/llm` | Create a new LLM API key | `400` Missing required fields or invalid API key; `404` Service or model not found |
+| POST | `/api/llm` | Create a new LLM API key (REST only) | `400` Missing required fields or invalid API key; `404` Service or model not found |
 | GET | `/api/llm/models/{serviceId}` | Get models for a specific service | `400` Missing serviceId |
 | GET | `/api/llm/services` | Get all enabled LLM services | - |
 | DELETE | `/api/llm/{id}` | Delete an LLM API key | `400` Missing id or API key is in use |
@@ -115,9 +118,9 @@ Body for `PUT /api/llm/{id}/model`:
 | Method | Path (after `/api/v2`) | Purpose | Notable errors |
 | --- | --- | --- | --- |
 | GET | `/api/prediction` | Get all prediction API keys | - |
-| POST | `/api/prediction` | Create a new prediction API key | `400` Missing required fields, invalid name, or invalid credentials; `404` Exchange not found |
+| POST | `/api/prediction` | Create a new prediction API key (REST only) | `400` Missing required fields, invalid name, or invalid credentials; `404` Exchange not found |
 | GET | `/api/prediction/bot/signal/{id}?page=&limit=` | Get prediction signal bots by API ID | `400` Missing required parameters |
-| POST | `/api/prediction/test` | Test prediction API credentials | `400` Missing required fields, invalid credentials, or exchange not found |
+| POST | `/api/prediction/test` | Test prediction API credentials (REST only) | `400` Missing required fields, invalid credentials, or exchange not found |
 | DELETE | `/api/prediction/{id}` | Delete prediction API key | `400` Missing API ID; `404` API key not found; `409` API key is in use by signal bots |
 | PUT | `/api/prediction/{id}/status` | Update prediction API key status | `400` Missing id, invalid status, or status already set; `404` API key not found |
 

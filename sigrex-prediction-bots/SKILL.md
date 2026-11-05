@@ -57,7 +57,9 @@ DELETE /api/prediction/{id}   (409 while bots use it)
 Send `funderAddress` as a string even though the published test schema
 types it as a number. Never log, echo or store the private key; collect it
 only through the dashboard or a secure channel, and prefer the user doing
-this step in the dashboard themselves.
+this step in the dashboard themselves. The two `POST` routes are REST
+only; over MCP, the user connects the wallet in the dashboard under
+**API connection** → **Prediction Market**.
 
 ## Bot Configuration
 
