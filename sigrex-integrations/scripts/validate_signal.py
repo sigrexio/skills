@@ -88,6 +88,9 @@ def check(payload, prediction, expect_key):
             errors.append("`size` must be greater than 0")
         elif not prediction:
             warnings.append("`size` units: quote currency when opening, base currency when closing")
+        else:
+            warnings.append("`size` units: USDC (USD on Kalshi) for a BUY, shares for a SELL; only used when "
+                            "the bot takes the amount from the signal or `forceSize` is true")
 
     for field in ("dilution", "forceSize"):
         if field in payload and not isinstance(payload[field], bool):

@@ -42,7 +42,7 @@ Read-only checks first; changes only with approval.
 | | Symbol mismatch (case, separator, `.P` suffix, trailing space) | Signal `symbol` must equal bot `symbol` exactly |
 | | `TEST` flag still present | Remove it (with approval) |
 | | `delay` / Frequency window dropped a burst | Space signals or adjust `delay` |
-| | Prediction: slug or outcome mismatch | Exact slug (last URL segment) and exact outcome label |
+| | Prediction: slug or outcome mismatch | Exact slug (Polymarket: last URL segment; Kalshi: market ticker; Outcome.xyz: event id or market id) and exact outcome label; copy both from the bot |
 | Only some bots executed | Others inactive, different symbols, or their keys failed | Check each bot and key |
 
 ## 4. Did the venue accept the order?
@@ -57,7 +57,8 @@ Read-only checks first; changes only with approval.
 | DEX swap failed or bot suspended | GasTank empty on that chain | Top up, then reactivate |
 | | Bot token balance below fixed amount (Use All off) | Fund the contract or enable Use All |
 | | `SwapFailed` event | Read the reason on the explorer (liquidity, route) |
-| Prediction order failed | Session key expired (180 days), account not a Deposit Wallet, no USDC | Reconnect; fund the profile address |
+| Prediction order failed | Polymarket: session key expired (180 days), account not a Deposit Wallet, no USDC; Outcome.xyz: API wallet revoked or no balance; Kalshi: API key revoked or no balance | Reconnect; fund the account |
+| Prediction SELL left shares | No buyers within 30% below the best bid (warning notification, bot stays active) | Send the SELL again later, or sell on the market directly |
 
 ## 5. API errors while building
 
