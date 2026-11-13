@@ -3,7 +3,7 @@ name: sigrex-overview
 description: Start here for any Sigrex task. Explains how the Sigrex trading-automation platform works end to end (webhooks, strategies, reactions, signal bots, credentials), the conditions that must all hold for a trade to execute, exchange and service IDs, how agents connect (MCP, REST, hook URLs), global safety rules, and which specialised Sigrex skill to load next. Use when a Sigrex request is broad or ambiguous, spans several components, or before building any Sigrex automation.
 metadata:
   author: sigrex
-  version: "2.0"
+  version: "2.1"
 ---
 
 # Sigrex Platform Overview
@@ -53,7 +53,7 @@ skill for the part you are working on.
 | Signal processing | **Bot Webhook** | Receives a signal and fans it out to all attached Signal Bots | No |
 | Execution | **CEX Signal Bot** | Places orders on a CEX with a stored exchange API key | Yes |
 | Execution | **DEX Signal Bot** | Swaps on Uniswap from a per-bot smart contract, gas from the GasTank | Yes |
-| Execution | **Prediction Signal Bot** (beta) | Trades Polymarket / Outcome.xyz outcomes with a session key | Yes |
+| Execution | **Prediction Signal Bot** (beta) | Trades Polymarket, Outcome.xyz and Kalshi outcomes (Polymarket session key, Outcome.xyz API wallet, Kalshi API key) | Yes |
 
 ## The Execution Checklist
 
@@ -66,7 +66,8 @@ walk this list in order:
 4. The bot's `symbol` equals the signal's `symbol` (prediction bots: the
    `slug` equals the bot's market, or the bot uses slug-from-signal).
 5. The bot's credential works: CEX API key valid and `ACTIVE`; DEX contract
-   funded and GasTank topped up; prediction session key not expired.
+   funded and GasTank topped up; prediction connection valid (Polymarket
+   session key not expired).
 6. The order size meets the venue's minimum and the account holds the funds.
 7. The signal is not flagged `TEST`.
 
@@ -110,8 +111,11 @@ has ID 2 in this account.
 | Uniswap | DEX | `10` | - | Polygon (`137`) and Arbitrum One (`42161`) |
 | Hyperliquid | CEX | `11` | `12` | USDC only |
 | Bitget | CEX | `13` | `14` | Futures are USD-M only |
+| Aster | CEX bot (on-chain exchange) | see `/exchange/cex` | see `/exchange/cex` | Pro API wallet connection |
+| Lighter | CEX bot (on-chain exchange) | see `/exchange/cex` | see `/exchange/cex` | API key + account index connection |
 | Polymarket | PREDICTION | `15` | - | Beta |
 | Outcome.xyz | PREDICTION | `17` | - | Beta |
+| Kalshi | PREDICTION | see `/exchange/prediction` | - | Beta; API key connection, verified Kalshi account |
 
 Spot and futures on the same exchange need **separate** API-key connections.
 Confirm the live list with `GET /api/v2/exchange` (fields `id`, `type`, `name`,
@@ -183,7 +187,7 @@ signal is always a POST (or email) to a Bot Webhook, or the MCP tool
 | Bot/Data Webhooks, signal payload, callbacks, sending signals | `sigrex-webhooks` |
 | Exchange API keys and CEX bots, sizing, symbols | `sigrex-cex-bots` |
 | Uniswap DEX bots, GasTank, contracts and ABIs | `sigrex-dex-bots` |
-| Polymarket / Outcome.xyz prediction bots and payloads | `sigrex-prediction-bots` |
+| Polymarket / Outcome.xyz / Kalshi prediction bots and payloads | `sigrex-prediction-bots` |
 | Writing JavaScript Code Strategies and Code Reactions | `sigrex-code-strategies` |
 | LLM providers, LLM Sessions, prompts, AI tools, charts | `sigrex-llm-trading` |
 | Data Webhook pipelines with Code/LLM Reactions | `sigrex-reactions` |

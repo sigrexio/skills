@@ -45,7 +45,7 @@ difference.
 
 | Method | Path (after `/api/v2`) | Purpose | Notable errors |
 | --- | --- | --- | --- |
-| GET | `/exchange?enabled=&chainId=` | Get all exchanges with optional filtering | - |
+| GET | `/exchange?enabled=&chainId=&type=&service=` | Get all exchanges with optional filtering (`type`: `cex`, `dex`; `service`: `spot`, `futures`, `stock`, `prediction`) | `400` invalid filter |
 | GET | `/exchange/cex` | Get all CEX exchanges | - |
 | GET | `/exchange/dex/{chain}` | Get all DEX exchanges by chain ID | `400` Missing chain ID |
 | GET | `/exchange/prediction` | Get all Prediction exchanges | - |
@@ -130,16 +130,22 @@ Body for `POST /api/prediction`:
 | --- | --- | --- | --- |
 | `name` | string | no | The name of the API key max 255 characters |
 | `exchangeId` | number | yes | The id of an exchange |
-| `funderAddress` | string | yes | PolyMarket platform funder address |
-| `walletPrivateKey` | string | yes | Signer wallet private key |
+| `funderAddress` | string | Polymarket / Outcome.xyz | Polymarket profile (deposit) address, or the main Hyperliquid wallet address for Outcome.xyz |
+| `walletPrivateKey` | string | Polymarket / Outcome.xyz | Polymarket: the wallet's private key, only used to create a session key and never stored. Outcome.xyz: a Hyperliquid API wallet private key |
+| `publicKey` | string | Kalshi | Kalshi API key ID |
+| `privateKey` | string | Kalshi | Kalshi API private key (PEM, RSA or Ed25519) |
 
 Body for `POST /api/prediction/test`:
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `exchangeId` | number | yes | The id of an exchange |
-| `funderAddress` | string | yes | PolyMarket platform funder address (the published test schema says `number`; send the `0x...` address as a string) |
-| `walletPrivateKey` | string | yes | Signer wallet private key |
+| `funderAddress` | string | Polymarket / Outcome.xyz | Same as above; send the `0x...` address as a string |
+| `walletPrivateKey` | string | Polymarket / Outcome.xyz | Same as above |
+| `publicKey` | string | Kalshi | Kalshi API key ID |
+| `privateKey` | string | Kalshi | Kalshi API private key (PEM) |
+
+Kalshi connections list their API key ID in `funderAddress`.
 
 Body for `PUT /api/prediction/{id}/status`:
 
@@ -330,7 +336,7 @@ Body for `PUT /bot/signal/dex/{id}/status`:
 | GET | `/bot/signal/prediction` | Get all prediction signal bots | - |
 | POST | `/bot/signal/prediction` | Create a new prediction signal bot | `400` Missing required fields, invalid data, or limit exceeded; `404` API key or webhook not found |
 | POST | `/bot/signal/prediction/duplicate` | Duplicate a prediction signal bot | `400` Missing bot ID, bot not found, or limit exceeded; `404` Bot or webhook not found |
-| GET | `/bot/signal/prediction/market/{exchange}/{slug}` | Get prediction market by slug | `400` Missing slug or invalid slug |
+| GET | `/bot/signal/prediction/market/{exchange}/{slug}` | Get prediction market by slug. `{exchange}`: `polymarket`, `outcome` or `kalshi`. An event with several markets returns its `markets` and no single market | `400` Missing slug or invalid slug |
 | GET | `/bot/signal/prediction/total` | Get the total number of Prediction signal bots | - |
 | GET | `/bot/signal/prediction/{id}` | Get prediction signal bot by ID | `400` Missing bot ID; `404` Bot not found |
 | PUT | `/bot/signal/prediction/{id}` | Update prediction signal bot | `400` Missing required fields or invalid data; `404` Bot, API key, or webhook not found |
@@ -346,9 +352,9 @@ Body for `POST /bot/signal/prediction`, `PUT /bot/signal/prediction/{id}`:
 | `webhook_id` | number | yes | The id of a bot webhook |
 | `api_id` | number | yes | The id of a bot Prediction API key |
 | `slug_from_signal` | boolean | yes | Set to true to specify a market slug dynamically within the signal payload. |
-| `url` | string | no | The market url (required if slug_from_signal is false) |
-| `amount_from_signal` | boolean | yes | Set if amount is coming from signal |
-| `amount` | number | no | The amount of the bot in USDC (if amount_from_signal is false) |
+| `url` | string | no | The market URL (required if slug_from_signal is false). An event URL with several markets has to point to one of them: Polymarket `/event/<event>/<market>`, Kalshi `?market=<TICKER>`, Outcome.xyz `?outcome=<market id>`. Closed or settled markets are rejected |
+| `amount_from_signal` | boolean | yes | Take the size from each signal: BUY in USDC (USD on Kalshi), SELL in shares (capped at the position). Signals without a size are ignored |
+| `amount` | number | no | Buy size in USDC (USD on Kalshi) if amount_from_signal is false. A SELL closes the whole position |
 | `delay` | number | no | Set how often the bot will check for new signals. eg. 10 means 10 in 1 second |
 
 Body for `POST /bot/signal/prediction/duplicate`:
@@ -694,8 +700,8 @@ and `dex` variants.
   `https://hook.sigrex.io/data/<hash>` with the `X-Key` header when protected.
 - **Friends** (requests, accept, remove) have no published REST routes.
 - **Environment variables**, the **GasTank**, **DEX contract deployment**,
-  and the **Polymarket/Outcome wallet connection** flow are dashboard or
-  on-chain operations.
+  and the **Polymarket / Outcome.xyz / Kalshi connection** flow are dashboard
+  or on-chain operations.
 
 ## SDK method map
 

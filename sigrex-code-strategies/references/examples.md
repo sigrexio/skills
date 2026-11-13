@@ -210,7 +210,10 @@ await $.Storage.set(S);
 Prediction bots accept only webhook signals, so post the prediction payload
 directly. Settings: `send_signal: false` (no webhook needed).
 Env: `PRED_HOOK_URL` (`https://hook.sigrex.io/bot/<hash>`), `PRED_HOOK_KEY`,
-`PRED_SLUG`, `PRED_SIZE` (`5`), `TRIGGER_ABOVE` (BTC price).
+`PRED_SLUG`, `PRED_SIZE` (`5`), `TRIGGER_ABOVE` (BTC price). `PRED_SLUG` is the
+bot's market slug (Polymarket market slug, Kalshi market ticker, Outcome.xyz
+event or market id). The `size` (USDC for a BUY) is only used when the bot
+takes the amount from the signal; a later `SELL` closes the whole position.
 
 ```js
 const S = (await $.Storage.get()) || { entered: false };
